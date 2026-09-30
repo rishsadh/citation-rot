@@ -38,6 +38,16 @@ class UrlTests(unittest.TestCase):
             self.assertIsNotNone(excluded_reason(u), u)
         self.assertIsNone(excluded_reason("https://en.wikipedia.org/wiki/Link_rot"))
 
+    def test_personal_profile_pages_are_dropped(self):
+        for u in ("https://www.blogger.com/profile/05010167771182635595", "https://spie.org/profile/Andrea.Scaudo-4374951",
+                  "https://www.famousbirthdays.com/people/someone.html", "https://mastodon.social/@someone",
+                  "https://medium.com/@someone", "https://example.org/author/jane-doe/",
+                  "https://en.wikipedia.org/wiki/User:Someone", "https://blueskystarterpack.com/starter-packs/x"):
+            self.assertIsNotNone(excluded_reason(u), u)
+        # an article by a named author is an ordinary page and stays
+        self.assertIsNone(excluded_reason("https://medium.com/@someone/how-to-check-links-abc123"))
+        self.assertIsNone(excluded_reason("https://example.org/blog/2025/link-rot"))
+
 
 class PageTests(unittest.TestCase):
     def test_extract_title_h1_text(self):
@@ -142,3 +152,23 @@ class PanelTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ProbeTests(unittest.TestCase):
+    def test_youtube_ids(self):
+        from citation_rot.probes import youtube_id
+        self.assertEqual(youtube_id("https://www.youtube.com/watch?v=dQw4w9WgXcQ&pp=abc"), "dQw4w9WgXcQ")
+        self.assertEqual(youtube_id("https://youtu.be/dQw4w9WgXcQ?t=3"), "dQw4w9WgXcQ")
+        self.assertEqual(youtube_id("https://www.youtube.com/shorts/dQw4w9WgXcQ"), "dQw4w9WgXcQ")
+        self.assertIsNone(youtube_id("https://www.youtube.com/@somechannel"))
+        self.assertIsNone(youtube_id("https://www.youtube.com/playlist?list=PL123"))
+        self.assertIsNone(youtube_id("https://www.youtube.com/watch?v=short"))
+        self.assertIsNone(youtube_id("https://example.com/watch?v=dQw4w9WgXcQ"))
+
+    def test_youtube_verdicts(self):
+        from citation_rot.probes import youtube_verdict
+        self.assertEqual(youtube_verdict(200)[0], "live")
+        self.assertEqual(youtube_verdict(404)[0], "dead")
+        self.assertEqual(youtube_verdict(400)[0], "dead")
+        self.assertEqual(youtube_verdict(401)[0], "blocked")
+        self.assertIsNone(youtube_verdict(503)[0])

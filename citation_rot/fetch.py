@@ -12,6 +12,7 @@ from urllib.parse import urljoin, urlsplit
 from urllib.robotparser import RobotFileParser
 
 from . import __version__
+from . import probes
 from .page import extract, looks_like_404
 from .simhash import simhash
 from .urls import host_of, is_home, same_page
@@ -19,7 +20,8 @@ from .urls import host_of, is_home, same_page
 UA = f"citation-rot/{__version__} (+https://github.com/rishsadh/citation-rot; link-status research; honours robots.txt)"
 MAX_BYTES = 262144
 MAX_HOPS = 5
-BLOCKED_CODES = {401, 403, 407, 429, 451, 999}
+# 402 (paywall), 405 and 406 are what bot filters answer a script; we could not look, so the page is not judged.
+BLOCKED_CODES = {401, 402, 403, 405, 406, 407, 429, 451, 999}
 REDIRECTS = (301, 302, 303, 307, 308)
 
 # Every outcome is exactly one of these.
@@ -67,6 +69,8 @@ def reason_of(reason):
         return "connection-refused"
     if isinstance(reason, ConnectionResetError):
         return "connection-reset"
+    if isinstance(reason, OSError) and getattr(reason, "winerror", None) in (10013, 10055):
+        return "local-socket-error"
     s = str(reason)
     if "CERTIFICATE" in s.upper():
         return "tls: certificate"
@@ -153,6 +157,8 @@ def check_url(url, limiter, robots, timeout=15, retry=True):
     rec = {"url": url, "checked_at": _now(), "hops": []}
     try:
         _check(url, limiter, robots, timeout, rec)
+        if rec["status"] == "live":
+            _probe(url, limiter, robots, timeout, rec)
         if retry and rec["status"] in ("unreachable", "server-error") and rec.get("reason") != "dns":
             time.sleep(3)
             first = rec["status"]
@@ -163,6 +169,32 @@ def check_url(url, limiter, robots, timeout=15, retry=True):
         rec.update(status="other", reason=f"checker error: {type(e).__name__}")
     rec["elapsed_ms"] = int((time.monotonic() - t0) * 1000)
     return rec
+
+
+def _probe(url, limiter, robots, timeout, rec):
+    """Second opinion for hosts that answer 200 for gone pages (see probes.py)."""
+    vid = probes.youtube_id(url)
+    if not vid:
+        return
+    probe_url = probes.oembed_url(vid)
+    verdict, _, crawl_delay = robots.check(probe_url)
+    if verdict != "allowed":
+        return
+    limiter.wait("www.youtube.com", crawl_delay)
+    code, _, _, err = http_get(probe_url, timeout, 65536)
+    if err:
+        return
+    status, reason = probes.youtube_verdict(code)
+    rec["probe"] = "youtube-oembed"
+    if status:
+        rec.update(status=status, reason=reason)
+
+
+def _error_status(err):
+    """A TLS failure or a local socket error says as much about this client as about the page
+    (missing intermediate certificate, old protocol, local firewall), so it is not judged.
+    A host that does not answer at all is unreachable."""
+    return "other" if err.startswith("tls") or err == "local-socket-error" else "unreachable"
 
 
 def _check(url, limiter, robots, timeout, rec):
@@ -178,12 +210,12 @@ def _check(url, limiter, robots, timeout, rec):
             rec.update(status="blocked", reason=detail, final_url=cur)
             return
         if verdict == "error":
-            rec.update(status="unreachable", reason=detail, final_url=cur)
+            rec.update(status=_error_status(detail), reason=detail, final_url=cur)
             return
         limiter.wait(host, crawl_delay)
         code, headers, body, err = http_get(cur, timeout)
         if err:
-            rec.update(status="unreachable", reason=err, final_url=cur)
+            rec.update(status=_error_status(err), reason=err, final_url=cur)
             return
         rec["hops"].append(code)
         rec["code"] = code

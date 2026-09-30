@@ -107,7 +107,7 @@ def headline(month, s):
              f"  unreachable     {c['unreachable']:>5}  {pct(c['unreachable'] / s['n']):>6}",
              f"  server error    {c['server-error']:>5}  {pct(c['server-error'] / s['n']):>6}",
              f"  blocked         {c['blocked']:>5}  {pct(c['blocked'] / s['n']):>6}   (not counted: robots.txt, 403, 429)",
-             f"  other           {c['other']:>5}  {pct(c['other'] / s['n']):>6}",
+             f"  other           {c['other']:>5}  {pct(c['other'] / s['n']):>6}   (not counted: TLS failures, odd codes)",
              ""]
     if s["resolved"]:
         lines += [f"  not live, of the {s['resolved']} we could tell: {rate_cell(s['not_live'], s['resolved'])}",
@@ -149,7 +149,8 @@ def markdown(month, s, header=None):
            _group_table("engine", s["by_engine"]), "", "## By month first cited", "",
            _group_table("first cited", s["by_cited_month"]), "", "## Busiest hosts in the panel", "",
            _group_table("host", s["top_hosts"]), ""]
-    for st, title in (("blocked", "Why pages were blocked"), ("unreachable", "Why pages were unreachable")):
+    for st, title in (("blocked", "Why pages were blocked"), ("unreachable", "Why pages were unreachable"),
+                      ("other", "Why pages were not judged (other)")):
         r = s["reasons"].get(st)
         if r:
             out += [f"## {title}", ""] + [f"- {k or '(no reason)'}: {v}" for k, v in r.items()] + [""]

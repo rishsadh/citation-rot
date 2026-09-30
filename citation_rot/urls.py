@@ -11,8 +11,12 @@ _BARE_RE = re.compile(r"https?://[^\s<>()\[\]\"']+")
 EXCLUDED_HOST_SUFFIXES = (
     "linkedin.com", "facebook.com", "fb.com", "instagram.com", "x.com", "twitter.com", "tiktok.com",
     "vk.com", "t.me", "telegram.me", "threads.net", "snapchat.com", "theorg.com",
-    "vertexaisearch.cloud.google.com",
+    "vertexaisearch.cloud.google.com", "famousbirthdays.com", "bsky.app", "bsky.social", "blueskystarterpack.com",
+    "about.me", "linktr.ee", "beacons.ai", "gravatar.com",
 )
+# Pages whose first two path segments name a person's profile or author page. Dropped and never stored.
+_PROFILE_SEGMENTS = {"profile", "profiles", "people", "person", "author", "authors", "user", "users", "member",
+                     "members", "u", "in", "athlete", "athletes", "pub", "whois"}
 _SENSITIVE_HOST_WORDS = ("porn", "xxx", "sex", "adult", "nude", "escort", "hentai", "onlyfans")
 
 
@@ -86,6 +90,11 @@ def excluded_reason(url):
     for s in EXCLUDED_HOST_SUFFIXES:
         if host == s or host.endswith("." + s):
             return "excluded host (personal profile, login wall or redirect token)"
+    segs = [s for s in unquote(p.path).lower().split("/") if s]
+    if any(s in _PROFILE_SEGMENTS for s in segs[:2]) or (segs and segs[0].startswith("@") and len(segs) == 1):
+        return "personal profile or author page"
+    if re.search(r"/wiki/(user|user_talk|special):", unquote(p.path).lower()):
+        return "personal profile or author page"
     if any(w in host for w in _SENSITIVE_HOST_WORDS):
         return "sensitive host name"
     if re.search(r"[\w.+-]+@[\w-]+\.[\w.]+", unquote(p.path + "?" + p.query)):

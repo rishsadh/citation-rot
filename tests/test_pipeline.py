@@ -127,6 +127,10 @@ class CliTests(unittest.TestCase):
         cohorts = [p["cohort"] for p in store.read_jsonl(store.panel_path())]
         self.assertEqual(cohorts, ["2026-10", "2026-10", "2026-11"])
 
+    def test_add_refuses_local_and_private_addresses(self):
+        self.call("add", "http://127.0.0.1:8000/x", "http://localhost/y", "http://10.0.0.5/z")
+        self.assertEqual(store.load_seeds(), [])
+
     def test_check_refuses_to_overwrite_a_month(self):
         self.call("add", "https://a.example.org/1")
         self.call("panel")

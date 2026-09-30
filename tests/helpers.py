@@ -70,8 +70,15 @@ class Handler(BaseHTTPRequestHandler):
         self._send(404, page("Not Found"))
 
 
+class QuietServer(ThreadingHTTPServer):
+    daemon_threads = True
+
+    def handle_error(self, request, client_address):
+        pass  # a client that timed out closes the socket; that is expected in the timeout test
+
+
 def serve():
     Handler.hits = []
-    srv = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    srv = QuietServer(("127.0.0.1", 0), Handler)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     return srv, f"http://127.0.0.1:{srv.server_address[1]}"

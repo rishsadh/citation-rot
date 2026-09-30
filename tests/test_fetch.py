@@ -101,10 +101,48 @@ class FetchTests(unittest.TestCase):
         t = time.monotonic()
         for _ in range(3):
             lim.wait("a.example")
-        self.assertGreaterEqual(time.monotonic() - t, 0.39)
+        self.assertGreaterEqual(time.monotonic() - t, 0.35)  # 2 waits of 0.2s; timers can run a little early
         t = time.monotonic()
         lim.wait("b.example")
         self.assertLess(time.monotonic() - t, 0.1)
+
+
+class ClientSideFailureTests(unittest.TestCase):
+    class AllowAll:
+        def check(self, url):
+            return "allowed", None, None
+
+    def run_with(self, err):
+        from unittest import mock
+        with mock.patch("citation_rot.fetch.http_get", return_value=(None, None, b"", err)):
+            return check_url("https://example.org/x", HostLimiter(0), self.AllowAll(), retry=False)
+
+    def test_tls_failure_on_robots_fetch_is_not_judged_either(self):
+        from unittest import mock
+        rob = Robots(HostLimiter(0), 2)
+        with mock.patch("citation_rot.fetch.http_get", return_value=(None, None, b"", "tls: CERTIFICATE_VERIFY_FAILED")):
+            r = check_url("https://example.org/x", HostLimiter(0), rob, retry=False)
+        self.assertEqual(r["status"], "other")
+
+    def test_tls_failure_is_not_judged(self):
+        r = self.run_with("tls: CERTIFICATE_VERIFY_FAILED")
+        self.assertEqual(r["status"], "other")
+
+    def test_local_socket_error_is_not_judged(self):
+        self.assertEqual(self.run_with("local-socket-error")["status"], "other")
+
+    def test_dns_failure_is_unreachable(self):
+        self.assertEqual(self.run_with("dns")["status"], "unreachable")
+
+    def test_reason_of_maps_windows_firewall_error(self):
+        from citation_rot.fetch import reason_of
+        e = OSError(10013, "forbidden")
+        e.winerror = 10013
+        self.assertEqual(reason_of(e), "local-socket-error")
+
+    def test_bot_filter_codes_are_blocked_not_other(self):
+        from citation_rot.fetch import BLOCKED_CODES
+        self.assertTrue({402, 403, 405, 406, 429} <= BLOCKED_CODES)
 
 
 if __name__ == "__main__":
