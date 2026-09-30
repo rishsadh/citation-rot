@@ -44,9 +44,26 @@ class UrlTests(unittest.TestCase):
                   "https://medium.com/@someone", "https://example.org/author/jane-doe/",
                   "https://en.wikipedia.org/wiki/User:Someone", "https://blueskystarterpack.com/starter-packs/x"):
             self.assertIsNotNone(excluded_reason(u), u)
+        for u in ("https://github.com/someuser", "https://www.worldcubeassociation.org/persons/2021ABCD01",
+                  "https://www.amazon.com/stores/Some-Name/author/B000000000",
+                  "https://forum.example.de/user-post-list/361-someone/"):
+            self.assertIsNotNone(excluded_reason(u), u)
         # an article by a named author is an ordinary page and stays
         self.assertIsNone(excluded_reason("https://medium.com/@someone/how-to-check-links-abc123"))
         self.assertIsNone(excluded_reason("https://example.org/blog/2025/link-rot"))
+        self.assertIsNone(excluded_reason("https://github.com/owner/repo"))
+        self.assertIsNone(excluded_reason("https://github.com/features"))
+
+    def test_login_bot_check_and_token_urls_are_dropped(self):
+        for u in ("https://sso.passport.yandex.ru/push?uuid=abc&retpath=https%3A%2F%2Fexample.org%2F",
+                  "https://www.google.com/sorry/index?continue=https%3A%2F%2Fwww.google.com%2F&q=EhAm",
+                  "https://example.org/report?token=abc123", "https://example.org/a?X-Amz-Signature=abc",
+                  "https://example.org/login?next=/a", "https://accounts.example.org/o/authorize/"):
+            self.assertIsNotNone(excluded_reason(u), u)
+        # an ordinary query string and a page that merely has "login" in its slug stay
+        self.assertIsNone(excluded_reason("https://example.org/watch?v=abc&t=10"))
+        self.assertIsNone(excluded_reason("https://example.org/blog/how-to-log-in-to-x"))
+        self.assertIsNone(excluded_reason("https://www.google.com/search?q=link+rot"))
 
 
 class PageTests(unittest.TestCase):

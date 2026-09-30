@@ -31,9 +31,53 @@ The models in the dataset are API versions of search-enabled models (for example
 Dropped at harvest time, and never stored: links on social and login-walled hosts (LinkedIn,
 Facebook, Instagram, X, TikTok, Telegram, The Org and similar), personal profile and author pages
 (`/profile/`, `/author/`, `/people/`, `@handle` pages and the like), redirect tokens, addresses with
-credentials or email addresses, non-public hostnames, and host names with sensitive words. The
-filter is a path and host list, so a few personal pages will still get through. The drop counts
-are in `seeds/search-arena-v1-7k.meta.json`.
+credentials or email addresses, sign-in and single-sign-on pages, bot-check pages, query strings
+that carry a token, session or signature, a user's own page on a code host (`github.com/<user>`),
+non-public hostnames, and host names with sensitive words. The filter is a path and host list, so
+a few personal pages will still get through. The drop counts are in
+`seeds/search-arena-v1-7k.meta.json`, which describes the harvest made under the first set of
+rules. The same filter runs again when a panel is drawn.
+
+On 30 September 2026 the panel was audited against the filter and nine URLs were removed from the
+panel and from the 2026-09 run: four Yandex single-sign-on redirects that carry a per-request
+identifier, one Google bot-check page with a token, and four pages about individuals (a
+competitor profile on a competition site, an author store page, a forum post list for one member
+and a code-host user page). They were not replaced. Nothing else was changed. The audit also
+looked for email addresses, credentials, session parameters and login-walled pages; a few other
+URLs are kept on purpose and listed under the known limits below.
+
+### Licence and terms of the seed data
+
+Checked on 30 September 2026. The Hugging Face dataset card for
+`lmarena-ai/search-arena-v1-7k` (revision `06865038ceb415c1942e58bff8f14150cbc9fbcd`) says, in its
+License section, that user prompts are licensed under CC-BY-4.0 and that model outputs are
+governed by the terms of use set by the respective model providers. The card's metadata header
+carries no `license` field, so that sentence is the whole statement. The card gives a citation for
+the Search Arena blog post; it is repeated in the README.
+
+What that means for this repo:
+
+- The CC-BY-4.0 grant covers prompts. This repo never stores or publishes a prompt, so the
+  attribution duty of that licence is not triggered. Attribution is given anyway.
+- The cited URLs come from the models' answers and search traces, which are model output, so
+  the providers' terms apply to them, not CC-BY-4.0. The repo keeps the URL, the date of the
+  answer and the engine family, and names the engine family next to every URL.
+- OpenAI's terms of use for its consumer services say the user owns the output. The API and
+  business terms for the models in the dataset were not read.
+- Perplexity's terms of service say a user may not publish output without clearly citing the
+  service. Every URL here carries its engine family, and the README names Perplexity as a source.
+- Google's Gemini API additional terms for Grounding with Google Search forbid caching,
+  syndicating or analysing grounded results, and forbid collecting the links in them to identify
+  pages to crawl. Those terms bind the developer who called the API, which was not this project,
+  and whether they reach a downstream reader of a public dataset is a legal question this repo
+  does not answer. The panel does contain URLs that appear to come from Gemini grounding models
+  (the `google` engine family, which includes `gemini-2.5-pro-grounding`) and this tool fetches
+  them. A reader who needs to stay inside
+  Google's terms should drop the `google` rows and the `multi` rows that include `google`.
+- A URL is a pointer to a third party's page. Nothing from the pages is stored except the status,
+  the redirect chain, the title and a simhash of the text.
+
+This is a reading of published terms by the maintainer, not legal advice.
 
 ## The panel
 
@@ -41,7 +85,9 @@ Re-checking all seeds every month would be slow and impolite, so a panel is draw
 frozen in `data/panel.jsonl`. The same URLs are checked every month, because decay only means
 something for a fixed set.
 
-- Random sample, fixed seed, so the draw can be reproduced from the seeds.
+- Random sample, fixed seed, so a draw can be repeated from the same seeds and filter. The 2026-09
+  draw predates the current filter rules and lost nine URLs afterwards, so it is recorded in
+  `data/panel.jsonl` rather than reproduced.
 - At most 25 URLs per host, so YouTube and Wikipedia do not fill the panel.
 - Equal quotas per engine family. One engine returns far more URLs than the others, so a plain
   sample would tell you almost nothing about the rest. The headline figure is therefore not
@@ -118,7 +164,7 @@ third of the corpus so far. Differences that matter when you compare numbers:
 
 | | OtterlyAI | this repo |
 |---|---|---|
-| Sample | 20M+ URLs | 2,000 URLs, same ones every month |
+| Sample | 20M+ URLs | 1,991 URLs (2,000 drawn, 9 removed by the privacy filter), same ones every month |
 | Checks | one snapshot | monthly, so decay and recovery are visible |
 | Cited when | one month of 2026 | March to April 2025 (about 17 months before the first check) |
 | Redirects | counted as not live | only counted as moved if the page differs |
@@ -149,3 +195,8 @@ headline rate.
   are counted as live or moved.
 - One vantage point, one network. Geo-blocked pages show as unreachable or blocked.
 - Not every cited URL was live when it was first cited. Some may never have existed.
+- The privacy filter keeps articles under an author's handle (for example Medium posts) and
+  reference pages about public figures (for example an IMDb name page or an athlete biography),
+  because they are ordinary published pages. Two URLs redirect to a login page, a venue listing
+  and a legal database entry, and are counted as blocked. They are kept because the login wall is
+  the finding.

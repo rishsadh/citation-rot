@@ -1,15 +1,15 @@
-citation-rot 2026-09: 2000 cited URLs re-checked
+citation-rot 2026-09: 1991 cited URLs re-checked
 
-  live             1255   62.7%
+  live             1253   62.9%
   moved             130    6.5%   (7 to a home page)
   soft-404            1    0.1%
   dead (404/410)     86    4.3%
   unreachable        49    2.5%
   server error        4    0.2%
-  blocked           446   22.3%   (not counted: robots.txt, 403, 429)
+  blocked           439   22.0%   (not counted: robots.txt, 403, 429)
   other              29    1.5%   (not counted: TLS failures, odd codes)
 
-  not live, of the 1525 we could tell: 17.7% (15.9% to 19.7%)
-  gone (404, 410, soft 404):       5.7% (4.6% to 7.0%)
+  not live, of the 1523 we could tell: 17.7% (15.9% to 19.7%)
+  gone (404, 410, soft 404):       5.7% (4.7% to 7.0%)
 
   first run: this is the baseline, so no change data yet

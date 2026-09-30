@@ -53,7 +53,10 @@ def cmd_add(a):
 
 
 def cmd_panel(a):
-    seeds = store.load_seeds()
+    # Filter again at draw time, so a seed file harvested under older rules cannot put a URL
+    # that the privacy filter now refuses into a new cohort.
+    # Seeds on local hosts only exist in the test suite, which serves pages from 127.0.0.1.
+    seeds = [s for s in store.load_seeds() if excluded_reason(s["url"]) in (None, "not a public hostname")]
     existing = store.read_jsonl(store.panel_path())
     if existing and not a.extend:
         sys.exit("A panel already exists and is frozen. Use --extend to add a new cohort to it.")

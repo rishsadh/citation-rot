@@ -2,16 +2,27 @@
   "cohorts": [
     {
       "by_engine": {
-        "google": 500,
+        "google": 494,
         "multi": 500,
-        "openai": 500,
-        "perplexity": 500
+        "openai": 498,
+        "perplexity": 499
       },
       "cohort": "2026-09",
+      "drawn": 2000,
       "per_host": 25,
+      "removed_after_draw": {
+        "count": 9,
+        "date": "2026-09-30",
+        "note": "Dropped from the panel and from the 2026-09 run after the privacy filter in citation_rot/urls.py gained rules for sign-in pages, bot-check tokens and code-host profiles. Not replaced.",
+        "reasons": {
+          "bot-check page with a token": 1,
+          "personal profile or author page": 4,
+          "sign-in or single-sign-on page": 4
+        }
+      },
       "seed": 1,
       "seeds_available": 79161,
-      "size": 2000,
+      "size": 1991,
       "stratified_by_engine": true
     }
   ]

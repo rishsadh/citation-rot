@@ -2,7 +2,7 @@
   "by_cited_month": {
     "2025-03": {
       "counts": {
-        "blocked": 171,
+        "blocked": 170,
         "dead": 31,
         "live": 474,
         "moved": 46,
@@ -13,16 +13,16 @@
       },
       "gone": 32,
       "live": 474,
-      "n": 761,
+      "n": 760,
       "not_live": 105,
       "resolved": 579,
-      "unresolved": 182
+      "unresolved": 181
     },
     "2025-04": {
       "counts": {
-        "blocked": 275,
+        "blocked": 269,
         "dead": 55,
-        "live": 781,
+        "live": 779,
         "moved": 84,
         "other": 18,
         "server-error": 2,
@@ -30,19 +30,19 @@
         "unreachable": 24
       },
       "gone": 55,
-      "live": 781,
-      "n": 1239,
+      "live": 779,
+      "n": 1231,
       "not_live": 165,
-      "resolved": 946,
-      "unresolved": 293
+      "resolved": 944,
+      "unresolved": 287
     }
   },
   "by_engine": {
     "google": {
       "counts": {
-        "blocked": 173,
+        "blocked": 168,
         "dead": 40,
-        "live": 568,
+        "live": 567,
         "moved": 54,
         "other": 7,
         "server-error": 2,
@@ -50,17 +50,17 @@
         "unreachable": 11
       },
       "gone": 40,
-      "live": 568,
-      "n": 855,
+      "live": 567,
+      "n": 849,
       "not_live": 107,
-      "resolved": 675,
-      "unresolved": 180
+      "resolved": 674,
+      "unresolved": 175
     },
     "openai": {
       "counts": {
-        "blocked": 185,
+        "blocked": 184,
         "dead": 35,
-        "live": 389,
+        "live": 388,
         "moved": 41,
         "other": 18,
         "server-error": 1,
@@ -68,15 +68,15 @@
         "unreachable": 23
       },
       "gone": 36,
-      "live": 389,
-      "n": 693,
+      "live": 388,
+      "n": 691,
       "not_live": 101,
-      "resolved": 490,
-      "unresolved": 203
+      "resolved": 489,
+      "unresolved": 202
     },
     "perplexity": {
       "counts": {
-        "blocked": 177,
+        "blocked": 176,
         "dead": 28,
         "live": 656,
         "moved": 69,
@@ -87,16 +87,16 @@
       },
       "gone": 28,
       "live": 656,
-      "n": 969,
+      "n": 968,
       "not_live": 126,
       "resolved": 782,
-      "unresolved": 187
+      "unresolved": 186
     }
   },
   "counts": {
-    "blocked": 446,
+    "blocked": 439,
     "dead": 86,
-    "live": 1255,
+    "live": 1253,
     "moved": 130,
     "other": 29,
     "server-error": 4,
@@ -104,19 +104,19 @@
     "unreachable": 49
   },
   "gone": 87,
-  "live": 1255,
+  "live": 1253,
   "moved_to_home": 7,
-  "n": 2000,
+  "n": 1991,
   "not_live": 270,
   "prev_month": null,
   "reasons": {
     "blocked": {
       "HTTP 401": 4,
-      "HTTP 403": 314,
+      "HTTP 403": 312,
       "HTTP 405": 3,
       "HTTP 406": 6,
       "HTTP 429": 3,
-      "robots.txt disallows": 107,
+      "robots.txt disallows": 102,
       "robots.txt returned 500": 1,
       "robots.txt returned 523": 1
     },
@@ -138,7 +138,7 @@
       "timeout": 26
     }
   },
-  "resolved": 1525,
+  "resolved": 1523,
   "retried": 36,
   "top_hosts": {
     "apnews.com": {
@@ -217,7 +217,7 @@
       "counts": {
         "blocked": 0,
         "dead": 2,
-        "live": 22,
+        "live": 21,
         "moved": 0,
         "other": 0,
         "server-error": 0,
@@ -225,10 +225,10 @@
         "unreachable": 0
       },
       "gone": 2,
-      "live": 22,
-      "n": 24,
+      "live": 21,
+      "n": 23,
       "not_live": 2,
-      "resolved": 24,
+      "resolved": 23,
       "unresolved": 0
     },
     "huggingface.co": {
@@ -341,7 +341,7 @@
     },
     "www.google.com": {
       "counts": {
-        "blocked": 25,
+        "blocked": 24,
         "dead": 0,
         "live": 0,
         "moved": 0,
@@ -352,10 +352,10 @@
       },
       "gone": 0,
       "live": 0,
-      "n": 25,
+      "n": 24,
       "not_live": 0,
       "resolved": 0,
-      "unresolved": 25
+      "unresolved": 24
     },
     "www.reddit.com": {
       "counts": {
@@ -412,6 +412,6 @@
       "unresolved": 0
     }
   },
-  "unresolved": 475,
+  "unresolved": 468,
   "vs_prev": null
 }

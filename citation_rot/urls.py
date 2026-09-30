@@ -15,9 +15,21 @@ EXCLUDED_HOST_SUFFIXES = (
     "about.me", "linktr.ee", "beacons.ai", "gravatar.com",
 )
 # Pages whose first two path segments name a person's profile or author page. Dropped and never stored.
-_PROFILE_SEGMENTS = {"profile", "profiles", "people", "person", "author", "authors", "user", "users", "member",
-                     "members", "u", "in", "athlete", "athletes", "pub", "whois"}
+_PROFILE_SEGMENTS = {"profile", "profiles", "people", "person", "persons", "author", "authors", "user", "users",
+                     "member", "members", "u", "in", "athlete", "athletes", "pub", "whois", "user-post-list"}
 _SENSITIVE_HOST_WORDS = ("porn", "xxx", "sex", "adult", "nude", "escort", "hentai", "onlyfans")
+# Added 30 Sep 2026 after the panel audit. Sign-in and single-sign-on pages, and bot-check pages, carry
+# one-time tokens and say nothing about a cited page.
+_LOGIN_HOST_PREFIXES = ("sso.", "passport.", "login.", "signin.", "auth.", "accounts.")
+_LOGIN_SEGMENTS = {"login", "signin", "sign-in", "log-in", "sso", "oauth", "oauth2", "authorize"}
+# Query parameters that carry a credential, a session or a signature. Exact names, lower case.
+_SECRET_PARAMS = {"token", "access_token", "id_token", "refresh_token", "auth", "auth_token", "authkey", "session",
+                  "sessionid", "session_id", "sess", "jsessionid", "phpsessid", "sig", "signature", "x-amz-signature",
+                  "x-amz-credential", "x-goog-signature", "password", "passwd", "pwd", "secret", "api_key", "apikey", "otp"}
+# A user's own page on a code host is a single path segment: github.com/<user>.
+_PROFILE_HOST_SINGLE_SEGMENT = ("github.com", "gitlab.com", "bitbucket.org")
+_RESERVED_SINGLE_SEGMENT = {"features", "pricing", "about", "explore", "topics", "marketplace", "sponsors", "enterprise",
+                            "security", "login", "join", "orgs", "collections", "trending", "readme", "customer-stories"}
 
 
 def is_tracking_param(name):
@@ -91,7 +103,18 @@ def excluded_reason(url):
         if host == s or host.endswith("." + s):
             return "excluded host (personal profile, login wall or redirect token)"
     segs = [s for s in unquote(p.path).lower().split("/") if s]
+    if host.startswith(_LOGIN_HOST_PREFIXES) or any(s in _LOGIN_SEGMENTS for s in segs[:2]):
+        return "sign-in or single-sign-on page"
+    if re.search(r"(^|\.)google\.[a-z.]+$", host) and segs[:1] == ["sorry"]:
+        return "bot-check page with a token"
+    if any(k.lower() in _SECRET_PARAMS for k, _ in parse_qsl(p.query, keep_blank_values=True)):
+        return "credential, session or signature in the query string"
+    if host.removeprefix("www.") in _PROFILE_HOST_SINGLE_SEGMENT and len(segs) == 1 and segs[0] not in _RESERVED_SINGLE_SEGMENT:
+        return "personal profile or author page"
     if any(s in _PROFILE_SEGMENTS for s in segs[:2]) or (segs and segs[0].startswith("@") and len(segs) == 1):
+        return "personal profile or author page"
+    # An author page can sit deeper than the second segment, as in amazon.com/stores/<name>/author/<id>.
+    if any(s in ("author", "authors") for s in segs[2:4]):
         return "personal profile or author page"
     if re.search(r"/wiki/(user|user_talk|special):", unquote(p.path).lower()):
         return "personal profile or author page"
