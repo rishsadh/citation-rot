@@ -1,0 +1,18 @@
+{
+  "cohorts": [
+    {
+      "by_engine": {
+        "google": 500,
+        "multi": 500,
+        "openai": 500,
+        "perplexity": 500
+      },
+      "cohort": "2026-09",
+      "per_host": 25,
+      "seed": 1,
+      "seeds_available": 79161,
+      "size": 2000,
+      "stratified_by_engine": true
+    }
+  ]
+}

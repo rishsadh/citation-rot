@@ -1,0 +1,18 @@
+{
+  "dataset": "https://huggingface.co/datasets/lmarena-ai/search-arena-v1-7k",
+  "dataset_revision": "06865038ceb415c1942e58bff8f14150cbc9fbcd",
+  "dropped": {
+    "email address in URL": 10,
+    "excluded host (personal profile, login wall or redirect token)": 1829,
+    "not a public hostname": 55,
+    "not a web URL": 3,
+    "personal profile or author page": 642,
+    "sensitive host name": 21
+  },
+  "licence_note": "Prompts CC-BY-4.0; model outputs under provider terms. Only cited URLs, answer date and engine family are kept.",
+  "read_on": "2026-09-30",
+  "references": 122514,
+  "rows_read": 7000,
+  "source": "search-arena-v1-7k",
+  "unique_urls": 79161
+}
