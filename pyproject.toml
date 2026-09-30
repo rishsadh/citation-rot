@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "citation-rot"
+version = "0.1.0"
+description = "A monthly re-check of URLs cited in published AI citation studies, recording dead, moved and changed pages."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Rish Sadh" }]
+dependencies = []
+
+[project.scripts]
+citation-rot = "citation_rot.cli:main"
+
+[tool.setuptools]
+packages = ["citation_rot"]

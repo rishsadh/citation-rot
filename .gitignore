@@ -9,3 +9,7 @@ __pycache__/
 !.env.example
 .DS_Store
 _internal/
+
+# The harvested seed list is about 30 MB and is rebuilt by `python -m citation_rot harvest`.
+# The frozen panel (data/panel.jsonl) is what is committed and re-checked.
+seeds/search-arena-*.jsonl

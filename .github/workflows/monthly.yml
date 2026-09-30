@@ -1,0 +1,34 @@
+name: monthly re-check
+
+# Disabled until launch. The schedule below is live in the file, but the job only runs when the
+# repository variable CITATION_ROT_ENABLED is set to "true" (Settings > Secrets and variables >
+# Actions > Variables). Manual runs with "Run workflow" also need that variable.
+on:
+  schedule:
+    - cron: "17 3 2 * *" # 03:17 UTC on the 2nd of each month
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  recheck:
+    if: ${{ vars.CITATION_ROT_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Re-check the panel
+        run: python -m citation_rot check --workers 8 --delay 2
+      - name: Write the report
+        run: python -m citation_rot report
+      - name: Commit the month
+        run: |
+          git config user.name "citation-rot"
+          git config user.email "324334208+rishsadh@users.noreply.github.com"
+          git add data reports
+          git commit -m "Monthly re-check $(date -u +%Y-%m)" || echo "nothing to commit"
+          git push
