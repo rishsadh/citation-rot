@@ -13,7 +13,7 @@ Python 3.10 or newer. No dependencies. That prints the latest month from the fil
 
 ## Why this exists
 
-On 24 July 2026 OtterlyAI published a study of 20,092,769 URLs cited by seven AI search engines and found that 19.3% were not live ([source](https://otterly.ai/blog/dead-citations-study/)). It is one snapshot, and the URL list is not published there. When I searched GitHub, npm and the web on 30 September 2026, I did not find a tool that re-checks a fixed set of cited URLs every month and publishes every record.
+On 24 July 2026 OtterlyAI reported that 19.3% of the URLs cited by seven AI search engines in one month did not return a live page, a share that counts redirects and unreachable responses as not live ([source](https://otterly.ai/blog/dead-citations-study/)). It describes a corpus of about 20 million URLs and says its figures cover roughly a third of it so far. It is one snapshot, and the URL list is not published there. When I searched GitHub, npm and the web on 30 September 2026, I did not find a tool that re-checks a fixed set of cited URLs every month and publishes every record.
 
 This is a small version of that. It draws 2,000 URLs from a published dataset of AI search answers, removes nine that a privacy audit flagged (sign-in redirects, a bot-check token and pages about individuals), freezes the remaining 1,991 as the panel, and re-checks the same URLs every month. Each month's result is one JSONL file in git, so the decay, the recoveries and the pages that changed under the same URL can be read from the history.
 
