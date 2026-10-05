@@ -11,6 +11,8 @@ python -m citation_rot report
 
 Python 3.10 or newer. No dependencies. That prints the latest month from the files in `data/`. Re-checking the panel yourself is `python -m citation_rot check`, which took about 12 minutes on the first run.
 
+Disclosure: Rish Sadh runs Reidify, a studio that sells AEO services. This is published as data with its method, not as a pitch.
+
 ## Why this exists
 
 On 24 July 2026 OtterlyAI reported that 19.3% of the URLs cited by seven AI search engines in one month did not return a live page, a share that counts redirects and unreachable responses as not live ([source](https://otterly.ai/blog/dead-citations-study/)). It describes a corpus of about 20 million URLs and says its figures cover roughly a third of it so far. It is one snapshot, and the URL list is not published there. When I searched GitHub, npm and the web on 30 September 2026, I did not find a tool that re-checks a fixed set of cited URLs every month and publishes every record.
