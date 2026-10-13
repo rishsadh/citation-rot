@@ -74,7 +74,7 @@ How it behaves on other people's servers: it names itself in the user agent, rea
 
 ### Monthly schedule
 
-`.github/workflows/monthly.yml` re-checks the panel on the 2nd of each month and commits the result. It is switched off: the job only runs when the repository variable `CITATION_ROT_ENABLED` is set to `true`. The 2nd comes after the first run, so the first scheduled run lands on 2 November.
+`.github/workflows/monthly.yml` re-checks the panel on the 2nd of each month and commits the result. It is switched on: the repository variable `CITATION_ROT_ENABLED` is set to `true`. The 2nd falls after the September run, so the scheduled run lands on 2 November.
 
 ## What it does not do
 

@@ -1,8 +1,8 @@
 name: monthly re-check
 
-# Disabled until launch. The schedule below is live in the file, but the job only runs when the
-# repository variable CITATION_ROT_ENABLED is set to "true" (Settings > Secrets and variables >
-# Actions > Variables). Manual runs with "Run workflow" also need that variable.
+# Switched on 13 Oct 2026. The job only runs while the repository variable CITATION_ROT_ENABLED is
+# "true" (Settings > Secrets and variables > Actions > Variables), and it is. Manual runs with
+# "Run workflow" also need that variable.
 on:
   schedule:
     - cron: "17 3 2 * *" # 03:17 UTC on the 2nd of each month
